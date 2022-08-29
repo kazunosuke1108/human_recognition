@@ -73,31 +73,6 @@ RUN echo "/usr/local/nvidia/lib" >> /etc/ld.so.conf.d/nvidia.conf && \
 # Required for non-glvnd setups.
 ENV LD_LIBRARY_PATH /usr/lib/x86_64-linux-gnu:/usr/lib/i386-linux-gnu${LD_LIBRARY_PATH:+:${LD_LIBRARY_PATH}}:/usr/local/nvidia/lib:/usr/local/nvidia/lib64
 
-#######################################################################
-##                    install python environment                     ##
-#######################################################################
-
-RUN apt-get update && apt-get install -y --no-install-recommends \
-   pip \
-   libgl1-mesa-glx \
-   libegl1-mesa \
-   libxrandr2 \
-   libxss1 \
-   libxcursor1 \ 
-   libxcomposite1 \ 
-   libasound2 \
-   libxi6 \
-   libxtst6 \
-   python3-dev \
-   python3-pip \
-   python3-setuptools \
-   qt5-default
-   # qt5-default: OpenCVとQtの競合解消のために必須
-
-RUN pip install \
-   numpy \
-   matplotlib \
-   opencv-python
 
 
 #######################################################################
@@ -167,8 +142,37 @@ RUN apt-get install -y ros-$ROS_DISTRO-realsense2-camera
 RUN apt-get install -y ros-$ROS_DISTRO-realsense2-description
 
 #######################################################################
+##                    install python environment                     ##
+#######################################################################
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+   pip \
+   libgl1-mesa-glx \
+   libegl1-mesa \
+   libxrandr2 \
+   libxss1 \
+   libxcursor1 \ 
+   libxcomposite1 \ 
+   libasound2 \
+   libxi6 \
+   libxtst6 \
+   python3-dev \
+   python3-pip \
+   python3-setuptools \
+   qt5-default
+   # qt5-default: OpenCVとQtの競合解消のために必須
+
+RUN pip install -U pip && pip install \
+   'numpy>1.19' \
+   matplotlib \
+   opencv-python \
+   torch \
+   yolov5
+
+#######################################################################
 ##                            delete cash                            ##
 #######################################################################
+RUN rm -rf /var/lib/apt/lists/*
 
 #######################################################################
 ##                         make sudoer user                          ##

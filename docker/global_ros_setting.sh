@@ -64,8 +64,8 @@ alias whill_mode='export ROS_MASTER_URI=http://${whill_ip}:11311 export PS1="\[\
 alias dlbox_mode='export ROS_MASTER_URI=http://${dlbox_ip}:11311 export PS1="\[\033[41;1;37m\]<DOCKER DLBOX_MODE>\[\033[0m\]\w$ "&& echo "ROS_MASTER_URI:"$ROS_MASTER_URI'
 
 # chmod a+x ~/catkin_ws/src/ytlab_navigation/ytlab_navigation_msgs/cfg/DWACostParams.cfg
-# sudo mkdir -p ~/.config/Ultralytics
-# sudo mkdir -p ~/.config/matplotlib
+sudo mkdir -p ~/.config/Ultralytics
+sudo mkdir -p ~/.config/matplotlib
 
 ## echo
 echo "ROS_IP:"$ROS_IP
