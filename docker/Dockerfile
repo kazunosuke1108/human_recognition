@@ -43,6 +43,37 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
    dbus-x11
 
 #######################################################################
+##                           install font                            ##
+#######################################################################
+RUN echo ttf-mscorefonts-installer msttcorefonts/accepted-mscorefonts-eula select true | debconf-set-selections 
+RUN apt-get update && apt-get install -y ttf-mscorefonts-installer \
+    ttf-ubuntu-font-family \
+    msttcorefonts -qq
+
+
+#######################################################################
+##                       install nvidia docker                       ##
+#######################################################################
+RUN apt-get install -y --no-install-recommends \
+    libxau-dev \
+    libxdmcp-dev \
+    libxcb1-dev \
+    libxext-dev \
+    libx11-dev \
+    mesa-utils \
+    x11-apps
+
+# nvidia-container-runtime
+ENV NVIDIA_VISIBLE_DEVICES ${NVIDIA_VISIBLE_DEVICES:-all}
+ENV NVIDIA_DRIVER_CAPABILITIES ${NVIDIA_DRIVER_CAPABILITIES:+$NVIDIA_DRIVER_CAPABILITIES,}graphics
+
+RUN echo "/usr/local/nvidia/lib" >> /etc/ld.so.conf.d/nvidia.conf && \
+    echo "/usr/local/nvidia/lib64" >> /etc/ld.so.conf.d/nvidia.conf
+
+# Required for non-glvnd setups.
+ENV LD_LIBRARY_PATH /usr/lib/x86_64-linux-gnu:/usr/lib/i386-linux-gnu${LD_LIBRARY_PATH:+:${LD_LIBRARY_PATH}}:/usr/local/nvidia/lib:/usr/local/nvidia/lib64
+
+#######################################################################
 ##                    install python environment                     ##
 #######################################################################
 
@@ -71,10 +102,53 @@ RUN pip install \
 ARG workspace
 WORKDIR ${workspace}
 
+#######################################################################
+##                            ros install                            ##
+#######################################################################
+
+# install packages
+RUN apt-get update && apt-get install -q -y \
+    dirmngr \
+    gnupg2 \
+    lsb-release
+
+# setup sources.list
+RUN echo "deb http://packages.ros.org/ros/ubuntu $(lsb_release -sc) main" > /etc/apt/sources.list.d/ros-latest.list
+# setup keys
+RUN curl -s https://raw.githubusercontent.com/ros/rosdistro/master/ros.asc | apt-key add -
+RUN apt-key adv --keyserver 'hkp://keyserver.ubuntu.com:80' --recv-key C1CF6E31E6BADE8868B172B4F42ED6FBAB17C654
+RUN curl -sSL 'http://keyserver.ubuntu.com/pks/lookup?op=get&search=0xC1CF6E31E6BADE8868B172B4F42ED6FBAB17C654' | apt-key add -
+RUN apt-get update 
+RUN apt-get install -y \
+    ros-noetic-desktop-full
+ # install ros packages
+ENV ROS_DISTRO noetic
+COPY ./ros_entrypoint.sh /
+
+RUN apt-get install -y \
+    python3-rosdep \
+    python3-rosinstall \ 
+    python3-rosinstall-generator \ 
+    python3-wstool \
+    build-essential 
 
 
 
+#######################################################################
+##                   install additional packages                     ##
+#######################################################################
 
+#######################################################################
+##                            delete cash                            ##
+#######################################################################
+
+#######################################################################
+##                         make sudoer user                          ##
+#######################################################################
+
+#######################################################################
+##                    make user accessible to usb                    ##
+#######################################################################
 
 #######################################################################
 ##             install python environment with Anaconda              ##
