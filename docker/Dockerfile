@@ -99,8 +99,6 @@ RUN pip install \
    matplotlib \
    opencv-python
 
-ARG workspace
-WORKDIR ${workspace}
 
 #######################################################################
 ##                            ros install                            ##
@@ -143,6 +141,30 @@ CMD ["bash"]
 #######################################################################
 ##                   install additional packages                     ##
 #######################################################################
+WORKDIR  /
+# setup environment
+ENV LANG C.UTF-8
+ENV LC_ALL C.UTF-8
+
+RUN apt-get update 
+RUN apt-get install -y libopencv-dev \
+    ros-noetic-camera-calibration \
+    ros-noetic-ros-numpy \
+    ros-noetic-robot-state-publisher
+
+#######################################################################
+##                        install realsense                          ##
+#######################################################################
+
+RUN sudo apt-key adv --keyserver keys.gnupg.net --recv-key F6E65AC044F831AC80A06380C8B3A55A6F3EFCDE || sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-key F6E65AC044F831AC80A06380C8B3A55A6F3EFCDE
+RUN sudo add-apt-repository "deb https://librealsense.intel.com/Debian/apt-repo bionic main" -u
+RUN sudo apt-get -y install librealsense2-dkms
+RUN sudo apt-get -y install librealsense2-utils
+RUN sudo apt-get -y install librealsense2-dev
+RUN sudo apt-get -y install librealsense2-dbg
+
+RUN apt-get install -y ros-$ROS_DISTRO-realsense2-camera
+RUN apt-get install -y ros-$ROS_DISTRO-realsense2-description
 
 #######################################################################
 ##                            delete cash                            ##
@@ -152,9 +174,57 @@ CMD ["bash"]
 ##                         make sudoer user                          ##
 #######################################################################
 
+ARG USER
+ARG USER_ID
+RUN groupadd -g 1000 developer && \
+    useradd  -g      developer -G sudo -m -u $USER_ID -s /bin/bash ${USER} && \
+    echo "${USER}:${USER}" | chpasswd
+
+RUN echo "Defaults visiblepw" >> /etc/sudoers
+RUN echo "${USER} ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
+
 #######################################################################
 ##                    make user accessible to usb                    ##
 #######################################################################
+RUN adduser ${USER} dialout
+RUN adduser ${USER} tty
+RUN adduser ${USER} video
+RUN adduser ${USER} root
+
+# RUN echo "source /ros_setting.sh">> ~/.bashrc
+
+
+#######################################################################
+##                          setup user name                          ##
+#######################################################################
+
+USER ${USER}
+
+# RUN sudo chmod -R 777 /of_v0.11.2_linux64gcc6_release
+
+RUN chmod 777 ~/.bashrc
+RUN echo "export PS1='\[\e[1;31;40m\]KAZU HR\[\e[0m\] \u:\w\$ '">> ~/.bashrc
+RUN echo "source /ros_setting.sh">> ~/.bashrc
+
+ARG workspace
+WORKDIR ${workspace}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 #######################################################################
 ##             install python environment with Anaconda              ##
