@@ -123,7 +123,6 @@ RUN apt-get install -y \
     ros-noetic-desktop-full
  # install ros packages
 ENV ROS_DISTRO noetic
-COPY ./ros_entrypoint.sh /
 
 RUN apt-get install -y \
     python3-rosdep \
@@ -132,7 +131,14 @@ RUN apt-get install -y \
     python3-wstool \
     build-essential 
 
+RUN rosdep init
+RUN rosdep update
 
+# setup entrypoint
+COPY ./ros_entrypoint.sh /
+
+ENTRYPOINT ["/ros_entrypoint.sh"]
+CMD ["bash"]
 
 #######################################################################
 ##                   install additional packages                     ##
