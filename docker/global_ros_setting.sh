@@ -10,14 +10,14 @@ ipv4addr=$(/sbin/ifconfig -a                                 |
 if [ "$TARGET_IP" = "" ] ; then
     ipv4addr="localhost"
 fi
-# ## get joy path
+## get joy path
 # joy_name=Logicool
 # get_joy_name=$(ls /dev/input/by-id |
 #             grep $joy_name     |
 #             grep -v event)
 # get_joy_path=/dev/input/by-id/$get_joy_name
 
-# CATKIN_HOME=~/catkin_ws
+CATKIN_HOME=~/catkin_ws
 # export TTY_WHILL=/dev/serial/by-id/usb-FTDI_FT232R_USB_UART_AB0P5EEG-if00-port0
 # export TTY_IMU=/dev/serial/by-id/usb-RT_CORPORATION_RT-USB-9AXIS-00_9AXIS-00-if00
 # export JOY_PATH=$get_joy_path
@@ -25,7 +25,7 @@ fi
 # echo "TTY_IMU : "$TTY_IMU
 # echo "JOY_PATH : "$JOY_PATH
 ## export
-#export ros_master=global
+# export ros_master=global
 export ros_master=local
 #export ros_master_global=192.168.1.55
 export hsr_ip=192.168.1.47
@@ -64,8 +64,8 @@ alias whill_mode='export ROS_MASTER_URI=http://${whill_ip}:11311 export PS1="\[\
 alias dlbox_mode='export ROS_MASTER_URI=http://${dlbox_ip}:11311 export PS1="\[\033[41;1;37m\]<DOCKER DLBOX_MODE>\[\033[0m\]\w$ "&& echo "ROS_MASTER_URI:"$ROS_MASTER_URI'
 
 # chmod a+x ~/catkin_ws/src/ytlab_navigation/ytlab_navigation_msgs/cfg/DWACostParams.cfg
-sudo mkdir -p ~/.config/Ultralytics
-sudo mkdir -p ~/.config/matplotlib
+# sudo mkdir -p ~/.config/Ultralytics
+# sudo mkdir -p ~/.config/matplotlib
 
 ## echo
 echo "ROS_IP:"$ROS_IP

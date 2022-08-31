@@ -16,7 +16,7 @@ else
     echo "=nvidia docker installed="
     echo "========================="
     
-    ./global_ros_setting.sh
+    # ./global_ros_setting.sh
 
     docker run -it \
     --privileged \

@@ -1,0 +1,2 @@
+recog_opencv/third_party/realsense-ros/realsense2_camera:recog_opencv/third_party/realsense-ros/realsense2_description
+-DCMAKE_BUILD_TYPE=Release -DCATKIN_DEVEL_PREFIX=/home/hayashide_kazuyuki/catkin_ws/devel -DCMAKE_INSTALL_PREFIX=/home/hayashide_kazuyuki/catkin_ws/install -G Unix Makefiles

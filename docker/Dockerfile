@@ -74,7 +74,6 @@ RUN echo "/usr/local/nvidia/lib" >> /etc/ld.so.conf.d/nvidia.conf && \
 ENV LD_LIBRARY_PATH /usr/lib/x86_64-linux-gnu:/usr/lib/i386-linux-gnu${LD_LIBRARY_PATH:+:${LD_LIBRARY_PATH}}:/usr/local/nvidia/lib:/usr/local/nvidia/lib64
 
 
-
 #######################################################################
 ##                            ros install                            ##
 #######################################################################
@@ -110,8 +109,6 @@ RUN rosdep update
 # setup entrypoint
 COPY ./ros_entrypoint.sh /
 
-ENTRYPOINT ["/ros_entrypoint.sh"]
-CMD ["bash"]
 
 #######################################################################
 ##                   install additional packages                     ##
@@ -125,7 +122,11 @@ RUN apt-get update
 RUN apt-get install -y libopencv-dev \
     ros-noetic-camera-calibration \
     ros-noetic-ros-numpy \
-    ros-noetic-robot-state-publisher
+    ros-noetic-robot-state-publisher \
+    python3-catkin-tools
+
+ENTRYPOINT ["/ros_entrypoint.sh"]
+CMD ["bash"]
 
 #######################################################################
 ##                        install realsense                          ##
@@ -170,8 +171,12 @@ RUN pip install -U pip && pip install \
    yolov5
 
 #######################################################################
-##                            delete cash                            ##
+##                 update submodules and  delete cash                ##
 #######################################################################
+# WORKDIR ${workspace}/src/recog_opencv/third_party/realsense-ros
+# RUN echo ${workspace}/src/recog_opencv/third_party/realsense-ros
+# RUN git submodule update --init --recursive
+# WORKDIR ${workspace}
 RUN rm -rf /var/lib/apt/lists/*
 
 #######################################################################
