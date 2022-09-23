@@ -30,6 +30,7 @@ else
     -v "/$(pwd)/ros_workspace:/home/${USER}/catkin_ws/" \
     -v "${PWD}/config/terminator_config:/home/${USER}/.config/terminator/config" \
     -v "/$(pwd)/../recog_opencv:/home/${USER}/catkin_ws/src/recog_opencv" \
+    -v "/$(pwd)/../object_detector:/home/${USER}/catkin_ws/src/object_detector" \
     -v /etc/group:/etc/group:ro \
     -v /etc/passwd:/etc/passwd:ro \
     -v /etc/localtime:/etc/localtime:ro \
