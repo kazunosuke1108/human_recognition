@@ -163,12 +163,27 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
    qt5-default
    # qt5-default: OpenCVとQtの競合解消のために必須
 
+#######################################################################
+##                 install environment for yolov5                    ##
+#######################################################################
+
 RUN pip install -U pip && pip install \
    'numpy>1.19' \
    matplotlib \
    opencv-python \
    torch \
    yolov5
+
+#######################################################################
+##               install environment for detectron2                  ##
+#######################################################################
+
+RUN pip install -U pip && pip install \
+   torchaudio \
+   ninja
+
+RUN git clone https://github.com/facebookresearch/detectron2.git && \
+    python3 -m pip install -e detectron2
 
 #######################################################################
 ##                 update submodules and  delete cash                ##
