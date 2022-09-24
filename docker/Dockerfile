@@ -171,15 +171,19 @@ RUN pip install -U pip && pip install \
    'numpy>1.19' \
    matplotlib \
    opencv-python \
-   torch \
    yolov5
+
+RUN pip install -U pip && pip install \
+    torch==1.12.1+cu116 \
+    torchvision==0.13.1+cu116 \
+    torchaudio \
+    -f https://download.pytorch.org/whl/torch_stable.html
 
 #######################################################################
 ##               install environment for detectron2                  ##
 #######################################################################
 
 RUN pip install -U pip && pip install \
-   torchaudio \
    ninja
 
 RUN git clone https://github.com/facebookresearch/detectron2.git && \
