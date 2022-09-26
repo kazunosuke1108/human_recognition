@@ -1,3 +1,4 @@
+from importlib.metadata import metadata
 from detectron2.engine import DefaultPredictor
 from detectron2.config import get_cfg
 from detectron2.data import MetadataCatalog
@@ -45,6 +46,9 @@ class Detector:
             metadata=MetadataCatalog.get(self.cfg.DATASETS.TRAIN[0]),
             instance_mode=ColorMode.IMAGE_BW)
 
+            print(predictions)
+
+
             output=viz.draw_instance_predictions(predictions["instances"].to("cpu"))
         else:
             predictions,segmentInfo=self.predictor(image)["panoptic_seg"]
@@ -53,9 +57,12 @@ class Detector:
             output=viz.draw_panoptic_seg_predictions(predictions.to("cpu"),segmentInfo)
         cv2.imshow("Result",output.get_image()[:,:,::-1])
         cv2.waitKey(0)
+        key=cv2.waitKey(1) & 0xFF
+        if key ==ord("q"):
+            cv2.destroyallwindows()
 
     def onVideo(self,videoPath):
-        cap=cv2.VideoCapture(videoPath)
+        cap=cv2.VideoCapture(0) #(videoPath)
 
         if (cap.isOpened()==False):
             print("Error in opening the file...")

@@ -1,7 +1,14 @@
 from test0924_1 import *
+"""
+model type
+OD: object detection
+IS: instance segmentation
+LVIS: LVinstance segmentation
+PS: panoptic segmentation
+KP: keypoint detection
+"""
+detector=Detector(model_type="KP")
 
-detector=Detector(model_type="PS")
+detector.onImage("images/GOPR0757.JPG")
 
-# detector.onImage("images/GOPR0757.JPG")
-
-detector.onVideo("images/GX010708.MP4")
+# detector.onVideo("images/GX010708.MP4")
