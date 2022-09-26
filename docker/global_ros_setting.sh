@@ -41,6 +41,10 @@ if [ -z "$TARGET_IP" ] ; then
 else
     export ROS_IP=$TARGET_IP
 fi
+if [ "$ipv4addr" = "" ] ; then
+    ipv4addr="localhost"
+fi
+TARGET_IP=$ipv4addr
 if [ ${ros_master} = local ] ; then
     echo "ROS_MASER : LOCAL" 
     export ROS_MASTER_URI=http://$TARGET_IP:11311
