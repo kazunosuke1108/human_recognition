@@ -35,9 +35,9 @@ class Detector:
 
         self.predictor=DefaultPredictor(self.cfg)
     
-    def onImage(self, imagePath):
+    def onImage(self, imagePath,savePath="/home/hayashide/catkin_ws/src/object_detector/images/save.jpg"):
         image=cv2.imread(imagePath)
-        image=cv2.resize(image,(1080,720))
+        # image=cv2.resize(image,(600,800))
         torch.cuda.empty_cache()
         if self.model_type != "PS":
             predictions=self.predictor(image)
@@ -46,7 +46,7 @@ class Detector:
             metadata=MetadataCatalog.get(self.cfg.DATASETS.TRAIN[0]),
             instance_mode=ColorMode.IMAGE_BW)
 
-            print(predictions)
+            # print(predictions['instances'].pred_keypoints)
 
 
             output=viz.draw_instance_predictions(predictions["instances"].to("cpu"))
@@ -55,11 +55,15 @@ class Detector:
             viz=Visualizer(image[:,:,::-1],
             MetadataCatalog.get(self.cfg.DATASETS.TRAIN[0]))
             output=viz.draw_panoptic_seg_predictions(predictions.to("cpu"),segmentInfo)
-        cv2.imshow("Result",output.get_image()[:,:,::-1])
-        cv2.waitKey(0)
-        key=cv2.waitKey(1) & 0xFF
-        if key ==ord("q"):
-            cv2.destroyallwindows()
+        
+        cv2.imwrite(savePath,output.get_image()[:,:,::-1])
+        return predictions['instances'].pred_keypoints
+        # cv2.imshow("Result",output.get_image()[:,:,::-1])
+        # cv2.waitKey(0)
+
+        # key=cv2.waitKey(1) & 0xFF
+        # if key ==ord("q"):
+        #     cv2.destroyallwindows()
 
     def onVideo(self,videoPath):
         cap=cv2.VideoCapture(0) #(videoPath)

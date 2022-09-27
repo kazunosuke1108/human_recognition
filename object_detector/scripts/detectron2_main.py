@@ -1,4 +1,4 @@
-from test0924_1 import *
+from detectron2_core import *
 """
 model type
 OD: object detection
@@ -9,6 +9,7 @@ KP: keypoint detection
 """
 detector=Detector(model_type="KP")
 
-detector.onImage("images/GOPR0757.JPG")
+detector.onImage("/home/hayashide/catkin_ws/src/object_detector/images/01_no_lost.jpg")
+
 
 # detector.onVideo("images/GX010708.MP4")
