@@ -9,7 +9,7 @@ KP: keypoint detection
 """
 detector=Detector(model_type="KP")
 
-detector.onImage("/home/hayashide/catkin_ws/src/object_detector/images/01_no_lost.jpg")
+# detector.onImage("/home/hayashide/catkin_ws/src/object_detector/images/01_no_lost.jpg")
 
 
-# detector.onVideo("images/GX010708.MP4")
+detector.onVideo("images/GX010708.MP4")
