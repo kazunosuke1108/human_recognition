@@ -190,6 +190,33 @@ RUN git clone https://github.com/facebookresearch/detectron2.git && \
     python3 -m pip install -e detectron2
 
 #######################################################################
+##                install environment for openpose                   ##
+#######################################################################
+
+# RUN git clone https://github.com/Hzzone/pytorch-openpose.git && \
+#     cd pytorch-openpose && \
+#     pip install -U pip && pip install -r requirements.txt
+
+# install model
+# ARG FILE_ID="1XPM213OcATl-e1wwGr4B67sfjj7HcQqZ"
+# ARG FILE_NAME="new_file"
+# RUN curl -sc /tmp/cookie "https://drive.google.com/uc?export=download&id=${FILE_ID}" > /dev/null
+# ARG CODE="$(awk '/_warning_/ {print $NF}' /tmp/cookie)"  
+# RUN curl -Lb /tmp/cookie "https://drive.google.com/uc?export=download&confirm=${CODE}&id=${FILE_ID}" -o ${FILE_NAME}
+
+#######################################################################
+##                install environment for posenet                    ##
+#######################################################################
+
+# edge PC 向け？のため保留
+
+# RUN pip install --extra-index-url https://google-coral.github.io/py-repo/ pycoral~=2.0 && \
+#     pip install libedgetpu1-max
+
+
+
+
+#######################################################################
 ##                 update submodules and  delete cash                ##
 #######################################################################
 # WORKDIR ${workspace}/src/recog_opencv/third_party/realsense-ros
