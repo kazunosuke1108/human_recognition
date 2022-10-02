@@ -1,4 +1,5 @@
 from importlib.metadata import metadata
+import time
 from detectron2.engine import DefaultPredictor
 from detectron2.config import get_cfg
 from detectron2.data import MetadataCatalog
@@ -8,6 +9,9 @@ from detectron2 import model_zoo
 import cv2
 import numpy as np
 import torch
+import rospy
+from cv_bridge import CvBridge, CvBridgeError
+from sensor_msgs.msg import Image
 
 class Detector:
     def __init__(self,model_type="OD"):
@@ -66,7 +70,7 @@ class Detector:
         #     cv2.destroyallwindows()
 
     def onVideo(self,videoPath):
-        cap=cv2.VideoCapture(0) #(videoPath)
+        cap=cv2.VideoCapture(videoPath)
 
         if (cap.isOpened()==False):
             print("Error in opening the file...")
@@ -96,3 +100,66 @@ class Detector:
                 break
         
             (success,image)=cap.read()
+
+    def onLive(self):
+        cap=cv2.VideoCapture(0)
+
+        if (cap.isOpened()==False):
+            print("Error in opening the file...")
+            return
+        
+        (success,image)=cap.read()
+
+        while success:
+            image=cv2.resize(image,(1080,720))
+            if self.model_type != "PS":
+                predictions=self.predictor(image)
+
+                viz=Visualizer(image[:,:,::-1],
+                metadata=MetadataCatalog.get(self.cfg.DATASETS.TRAIN[0]),
+                instance_mode=ColorMode.IMAGE_BW)
+
+                output=viz.draw_instance_predictions(predictions["instances"].to("cpu"))
+            else:
+                predictions,segmentInfo=self.predictor(image)["panoptic_seg"]
+                viz=Visualizer(image[:,:,::-1],
+                MetadataCatalog.get(self.cfg.DATASETS.TRAIN[0]))
+                output=viz.draw_panoptic_seg_predictions(predictions.to("cpu"),segmentInfo)
+
+            cv2.imshow("Result",output.get_image()[:,:,::-1])
+            key=cv2.waitKey(1) & 0xFF
+            if key ==ord("q"):
+                break
+        
+            (success,image)=cap.read()
+    
+    def onROS(self,topicName='/hsrb/head_rgbd_sensor/rgb/image_rect_color'):
+        rospy.init_node('detectron2')
+        spin_rate=rospy.Rate(30)
+        bridge=CvBridge()
+        input_image=None
+
+        def color_image_cb(data):
+            try:
+                global input_image
+                input_image = bridge.imgmsg_to_cv2(data, "bgr8")
+                print("here")
+                spin_rate.sleep()
+            except CvBridgeError as cv_bridge_exception:
+                rospy.logerr(cv_bridge_exception)
+
+
+
+        # Subscribe color image data from HSR
+        # Wait until connection
+        # rospy.wait_for_message(topicName, Image, timeout=5.0)
+        image_sub = rospy.Subscriber(topicName, Image, color_image_cb)
+        while not rospy.is_shutdown():
+            time.sleep(0.01)
+            try:
+                cv2.imshow("HSR eye",input_image)
+                cv2.waitKey(3)
+            except cv2.error as e:
+                print(e)
+                pass
+        cv2.destroyAllWindows()
