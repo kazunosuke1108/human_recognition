@@ -20,6 +20,7 @@ from geometry_msgs.msg import PointStamped, Pose2D
 import message_filters
 from cv_bridge import CvBridge
 import collections
+import time
 
 # 個人識別
 # from ytlab_whill.ytlab_whill_modules.scripts.reference.individual_recognition_index import personReidentification,Tracker
@@ -205,12 +206,10 @@ class Human_tracking():
             R = rospy.Rate(150)
             try:
                 # br_human.sendTransform(trans,rot,rospy.Time.now(),"/human",self.camera_frame)
-                print("###### DEBUG ROI STARTS ######")
                 br_human.sendTransform(trans,rot,rospy.Time.now(),"/human_position_link","/head_rgbd_sensor_link")
                 R.sleep()
                 listen=ls_human.lookupTransform("/head_rgbd_sensor_link","/human_position_link",rospy.Time(0))
                 print(listen)
-                print("###### DEBUG ROI ENDS ######")
 
 
                 # print(self.camera_frame)
@@ -288,7 +287,20 @@ class Human_tracking():
             #     pass
             
             # object recognition
+            print("###### DEBUG ROI STARTS ######")
+            s=time.time()
+            if int(rospy.get_time()-self.t_start)%30==0:
+                pass
+                print("renew model")
+                del self.model
+                self.model = torch.hub.load("/usr/local/lib/python3.8/dist-packages/yolov5", 'custom', path=os.environ['HOME']+'/catkin_ws/src/object_detector/config/yolov5/yolov5s.pt',source='local')
+                time.sleep(10)
+            else:
+                print("current time:",rospy.get_time()-self.t_start)
+                os.system("nvidia-smi")
             results=self.model(rgb_array)
+            print(f"###### time needed {time.time()-s} ######")
+            print("###### DEBUG ROI ENDS ######")
             objects=results.pandas().xyxy[0]
             obj_people=objects[objects['name']=='person']
             rect_list=self.get_position(rgb_array,dpt_array,obj_people,Proj_mtx)
