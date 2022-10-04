@@ -40,14 +40,21 @@ csv_data_pd=pd.DataFrame(csv_data).to_numpy()
 print(csv_data_pd)
 
 data_old=None
+x=np.array([
+        [data[1]],
+        [data[2]],
+        [data_old[1]*(1+dt)],
+        [data_old[1]*(1+dt)],
+
+])
 for i,data in enumerate(csv_data_pd):
     if np.isnan(data[2]):
         print(f"###### SEQUENCE {i+2} #####")
         x=np.array([
             [data[1]],
             [data[2]],
-            [data_old[1]+dt],
-            [data[1]],
+            [data_old[1]*(1+dt)],
+            [data_old[1]*(1+dt)],
         ])
     data_old=data
     pass
