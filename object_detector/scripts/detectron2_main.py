@@ -12,4 +12,4 @@ detector=Detector(model_type="KP")
 # detector.onImage("/home/hayashide/catkin_ws/src/object_detector/images/01_no_lost.jpg")
 
 
-detector.onVideo("images/GX010708.MP4")
+detector.onVideo(videoPath="chair_occlusion.mp4",csvPath=f'/home/hayashide/catkin_ws/src/object_detector/csv/1004_detectron2.csv')

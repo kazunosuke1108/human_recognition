@@ -69,8 +69,14 @@ class Detector:
         # if key ==ord("q"):
         #     cv2.destroyallwindows()
 
-    def onVideo(self,videoPath):
+    def onVideo(self,videoPath,savePath=False,csvPath=False):
         cap=cv2.VideoCapture(videoPath)
+
+        size=(1080,720)
+        
+        if savePath:
+            fourcc = cv2.VideoWriter_fourcc('m','p','4', 'v')
+            video=cv2.VideoWriter(savePath,fourcc, 20.0,size)
 
         if (cap.isOpened()==False):
             print("Error in opening the file...")
@@ -78,8 +84,11 @@ class Detector:
         
         (success,image)=cap.read()
 
+        history=[]
+        i=0
+
         while success:
-            image=cv2.resize(image,(1080,720))
+            image=cv2.resize(image,size)
             if self.model_type != "PS":
                 predictions=self.predictor(image)
 
@@ -93,13 +102,35 @@ class Detector:
                 viz=Visualizer(image[:,:,::-1],
                 MetadataCatalog.get(self.cfg.DATASETS.TRAIN[0]))
                 output=viz.draw_panoptic_seg_predictions(predictions.to("cpu"),segmentInfo)
+            
+            if csvPath:
+                pred_keypoints=predictions['instances'].pred_keypoints
+                try:
+                    np_pred_keypoints=pred_keypoints.to(torch.device('cpu')).detach().clone().numpy()[0]
+                    np_pred_keypoints_time=np.insert(np_pred_keypoints,0,i)
+                    history.append(np_pred_keypoints_time)
+                except IndexError:
+                    np_pred_keypoints=np.full_like(np_pred_keypoints,np.nan)
+                    np_pred_keypoints_time=np.insert(np_pred_keypoints,0,i)
+                    history.append(np_pred_keypoints_time)
+                np.savetxt(csvPath,history,delimiter=",")
+
 
             cv2.imshow("Result",output.get_image()[:,:,::-1])
+            if savePath:
+                video.write(output.get_image()[:,:,::-1])
+                print("add frame:",time.time())
             key=cv2.waitKey(1) & 0xFF
             if key ==ord("q"):
                 break
         
             (success,image)=cap.read()
+
+            i+=1/30
+
+        if savePath:
+            video.release()
+            print("video released")
 
     def onLive(self):
         cap=cv2.VideoCapture(0)

@@ -17,8 +17,7 @@ import message_filters
 from sensor_msgs.msg import Image
 from sensor_msgs.msg import CameraInfo
 
-import subprocess
-# import reference.yolov7.kp_test
+
 
 
 class HPE():
@@ -48,6 +47,7 @@ class HPE():
 
             pass
         elif self.model=="detectron2":
+
             pass
         elif self.model=="openpose":
             pass
