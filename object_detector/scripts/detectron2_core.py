@@ -76,7 +76,7 @@ class Detector:
         
         if savePath:
             fourcc = cv2.VideoWriter_fourcc('m','p','4', 'v')
-            video=cv2.VideoWriter(savePath,fourcc, 20.0,size)
+            video=cv2.VideoWriter(savePath,fourcc, 45.0,size)
 
         if (cap.isOpened()==False):
             print("Error in opening the file...")
