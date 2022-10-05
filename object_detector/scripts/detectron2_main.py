@@ -7,9 +7,10 @@ LVIS: LVinstance segmentation
 PS: panoptic segmentation
 KP: keypoint detection
 """
-detector=Detector(model_type="KP")
+detector=Detector(model_type="OD")
 
-# detector.onImage("/home/hayashide/catkin_ws/src/object_detector/images/01_no_lost.jpg")
+results=detector.onImage(imagePath="/home/hayashide/catkin_ws/src/object_detector/images/sources/00_no_lost.jpeg")
+# print(list(detector.onImage(imagePath="/home/hayashide/catkin_ws/src/object_detector/images/sources/00_no_lost.jpeg")))#[0].numpy())
+print(results)
 
-
-detector.onVideo(videoPath="chair_occlusion.mp4",csvPath=f'/home/hayashide/catkin_ws/src/object_detector/csv/1004_detectron2.csv')
+# detector.onVideo(videoPath="chair_occlusion.mp4",csvPath=f'/home/hayashide/catkin_ws/src/object_detector/csv/1004_detectron2.csv')

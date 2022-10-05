@@ -8,14 +8,18 @@
 - bounding boxとkeypointが推定される
 """
 import os
+import cv2
 import time
-
+import numpy as np
 import torch
 
 import rospy
 import message_filters
+from cv_bridge import CvBridge
 from sensor_msgs.msg import Image
 from sensor_msgs.msg import CameraInfo
+
+from detectron2_core import Detector
 
 
 
@@ -47,7 +51,8 @@ class HPE():
 
             pass
         elif self.model=="detectron2":
-
+            self.model_OD=Detector(model_type="OD")
+            self.model_IS=Detector(model_type="KP")
             pass
         elif self.model=="openpose":
             pass
@@ -73,7 +78,7 @@ class HPE():
         if self.topicName_camInfo:
             sub_camInfo=message_filters.Subscriber(self.topicName_camInfo,CameraInfo)
             sub_list.append(sub_camInfo)
-        mf=message_filters.ApproximateTimeSynchronizer(sub_list,100,0.5)
+        mf=message_filters.ApproximateTimeSynchronizer(sub_list,100,5)
 
         return mf
         # ImageCallback: modelに画像を投げる
@@ -84,6 +89,36 @@ class HPE():
         elif self.model=="yolov7":
             pass
         elif self.model=="detectron2":
+            # Object Detection (bounding box)
+            if topic_rgb:
+                try:
+                    bridge = CvBridge()
+                    rgb_array = bridge.imgmsg_to_cv2(topic_rgb)
+                    rgb_array=cv2.cvtColor(rgb_array,cv2.COLOR_BGR2RGB)
+                    # plt.imshow(rgb_array)
+                    # plt.pause(.001)
+                    # cv2.imshow("rgb",rgb_array)
+                    # cv2.imwrite("/home/hayashide/catkin_ws/src/object_detector/scripts/monitor/rgb.jpg",rgb_array)
+                    print("rgb show")
+
+                except Exception as err:
+                    rospy.logerr(err)
+            if topic_dpt:
+                dpt_array = np.frombuffer(topic_dpt.data, dtype=np.uint16).reshape(topic_dpt.height, topic_dpt.width, -1)
+                dpt_array=np.nan_to_num(dpt_array)
+                dpt_array_show=(dpt_array-np.min(dpt_array))/(np.max(dpt_array)-np.min(dpt_array))*255
+                dpt_array_show=cv2.applyColorMap(np.uint8(dpt_array_show),cv2.COLORMAP_JET)
+                # cv2.imwrite("/home/hayashide/catkin_ws/src/object_detector/scripts/monitor/depth.jpg",dpt_array_show)
+                cv2.imshow("depth",dpt_array_show)
+                print("dpt show")
+                pass
+            if topic_camInfo:
+                pass
+            cv2.waitKey(1)
+            
+            bbox_list=list(self.model_OD.onImage(image_mat=rgb_array))
+            print(bbox_list)
+            # KeyPoint Detection (姿勢推定)
             pass
         elif self.model=="openpose":
             pass

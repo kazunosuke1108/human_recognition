@@ -39,9 +39,12 @@ class Detector:
 
         self.predictor=DefaultPredictor(self.cfg)
     
-    def onImage(self, imagePath,savePath="/home/hayashide/catkin_ws/src/object_detector/images/save.jpg"):
-        image=cv2.imread(imagePath)
-        # image=cv2.resize(image,(600,800))
+    def onImage(self, imagePath=False, image_mat=None, savePath="/home/hayashide/catkin_ws/src/object_detector/images/save.jpg"):
+        if (image_mat!=None):
+            image=image_mat
+        if imagePath:
+            image=cv2.imread(imagePath)
+        image=cv2.resize(image,(640,480))
         torch.cuda.empty_cache()
         if self.model_type != "PS":
             predictions=self.predictor(image)
@@ -61,13 +64,16 @@ class Detector:
             output=viz.draw_panoptic_seg_predictions(predictions.to("cpu"),segmentInfo)
         
         cv2.imwrite(savePath,output.get_image()[:,:,::-1])
-        return predictions['instances'].pred_keypoints
-        # cv2.imshow("Result",output.get_image()[:,:,::-1])
-        # cv2.waitKey(0)
+        if self.model_type=="OD":
+            return predictions['instances']#.pred_boxes.to(torch.device('cpu'))
+        if self.model_type=="KP":
+            return predictions['instances'].pred_keypoints
+        cv2.imshow("Result",output.get_image()[:,:,::-1])
+        # cv2.waitKey(1)
 
-        # key=cv2.waitKey(1) & 0xFF
-        # if key ==ord("q"):
-        #     cv2.destroyallwindows()
+        key=cv2.waitKey(1) & 0xFF
+        if key ==ord("q"):
+            cv2.destroyallwindows()
 
     def onVideo(self,videoPath,savePath=False,csvPath=False):
         cap=cv2.VideoCapture(videoPath)
@@ -163,7 +169,7 @@ class Detector:
                 break
         
             (success,image)=cap.read()
-    
+
     def onROS(self,topicName='/hsrb/head_rgbd_sensor/rgb/image_rect_color'):
         rospy.init_node('detectron2')
         spin_rate=rospy.Rate(30)

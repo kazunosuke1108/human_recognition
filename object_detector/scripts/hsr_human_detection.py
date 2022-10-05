@@ -99,7 +99,7 @@ class Human_tracking():
         sub_list.append(dpt_sub)
         info_sub=message_filters.Subscriber(topic_name_inf,CameraInfo)
         sub_list.append(info_sub)
-        mf=message_filters.ApproximateTimeSynchronizer(sub_list,100,0.5)
+        mf=message_filters.ApproximateTimeSynchronizer(sub_list,100,5)
 
         # publisher
         self.pub_PointStamped=rospy.Publisher("publisher_point",PointStamped,queue_size=1)
@@ -289,15 +289,15 @@ class Human_tracking():
             # object recognition
             print("###### DEBUG ROI STARTS ######")
             s=time.time()
-            if int(rospy.get_time()-self.t_start)%30==0:
-                pass
-                print("renew model")
-                del self.model
-                self.model = torch.hub.load("/usr/local/lib/python3.8/dist-packages/yolov5", 'custom', path=os.environ['HOME']+'/catkin_ws/src/object_detector/config/yolov5/yolov5s.pt',source='local')
-                time.sleep(10)
-            else:
-                print("current time:",rospy.get_time()-self.t_start)
-                os.system("nvidia-smi")
+            # if int(rospy.get_time()-self.t_start)%30==0:
+            #     pass
+            #     print("renew model")
+            #     del self.model
+            #     self.model = torch.hub.load("/usr/local/lib/python3.8/dist-packages/yolov5", 'custom', path=os.environ['HOME']+'/catkin_ws/src/object_detector/config/yolov5/yolov5s.pt',source='local')
+            #     time.sleep(10)
+            # else:
+            #     print("current time:",rospy.get_time()-self.t_start)
+            #     os.system("nvidia-smi")
             results=self.model(rgb_array)
             print(f"###### time needed {time.time()-s} ######")
             print("###### DEBUG ROI ENDS ######")
