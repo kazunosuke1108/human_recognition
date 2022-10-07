@@ -82,7 +82,7 @@ class Detector:
         
         if savePath:
             fourcc = cv2.VideoWriter_fourcc('m','p','4', 'v')
-            video=cv2.VideoWriter(savePath,fourcc, 20.0,size)
+            video=cv2.VideoWriter(savePath,fourcc, 30.0,size)
 
         if (cap.isOpened()==False):
             print("Error in opening the file...")
@@ -116,7 +116,10 @@ class Detector:
                     np_pred_keypoints_time=np.insert(np_pred_keypoints,0,i)
                     history.append(np_pred_keypoints_time)
                 except IndexError:
-                    np_pred_keypoints=np.full_like(np_pred_keypoints,np.nan)
+                    try:
+                        np_pred_keypoints=np.full_like(np_pred_keypoints,np.nan)
+                    except UnboundLocalError:
+                        np_pred_keypoints=np.full((1,51),np.nan)
                     np_pred_keypoints_time=np.insert(np_pred_keypoints,0,i)
                     history.append(np_pred_keypoints_time)
                 np.savetxt(csvPath,history,delimiter=",")

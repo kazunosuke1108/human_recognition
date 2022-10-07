@@ -1,3 +1,7 @@
+import os
+from glob import glob
+import subprocess as sp
+
 from detectron2_core import *
 """
 model type
@@ -7,10 +11,15 @@ LVIS: LVinstance segmentation
 PS: panoptic segmentation
 KP: keypoint detection
 """
-detector=Detector(model_type="OD")
+detector=Detector(model_type="KP")
 
-results=detector.onImage(imagePath="/home/hayashide/catkin_ws/src/object_detector/images/sources/00_no_lost.jpeg")
+# results=detector.onImage(imagePath="/home/hayashide/catkin_ws/src/object_detector/images/sources/00_no_lost.jpeg")
 # print(list(detector.onImage(imagePath="/home/hayashide/catkin_ws/src/object_detector/images/sources/00_no_lost.jpeg")))#[0].numpy())
-print(results)
+# print(results)
 
-# detector.onVideo(videoPath="chair_occlusion.mp4",csvPath=f'/home/hayashide/catkin_ws/src/object_detector/csv/1004_detectron2.csv')
+videos=sorted(glob("/home/hayashide/catkin_ws/src/object_detector/scripts/temp/sources/*"))
+
+
+for videoPath in videos:
+    video_basename=os.path.basename(videoPath)
+    detector.onVideo(videoPath=videoPath,savePath=f"/home/hayashide/catkin_ws/src/object_detector/scripts/temp/results/{video_basename}",csvPath=f'/home/hayashide/catkin_ws/src/object_detector/csv/{video_basename[:-4]}.csv')

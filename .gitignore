@@ -1,4 +1,5 @@
 object_detector/images
+object_detector/scripts/temp
 object_detector/scripts/test/images
 docker/config/ros_workspace/build
 docker/config/ros_workspace/devel
