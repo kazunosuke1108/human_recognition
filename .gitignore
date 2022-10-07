@@ -4,3 +4,4 @@ object_detector/scripts/test/images
 docker/config/ros_workspace/build
 docker/config/ros_workspace/devel
 object_detector/config
+object_detector/csv

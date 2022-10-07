@@ -22,4 +22,7 @@ videos=sorted(glob("/home/hayashide/catkin_ws/src/object_detector/scripts/temp/s
 
 for videoPath in videos:
     video_basename=os.path.basename(videoPath)
-    detector.onVideo(videoPath=videoPath,savePath=f"/home/hayashide/catkin_ws/src/object_detector/scripts/temp/results/{video_basename}",csvPath=f'/home/hayashide/catkin_ws/src/object_detector/csv/{video_basename[:-4]}.csv')
+    if video_basename[-4:]==".mp4":
+        detector.onVideo(videoPath=videoPath,savePath=f"/home/hayashide/catkin_ws/src/object_detector/scripts/temp/results/{video_basename}",csvPath=f'/home/hayashide/catkin_ws/src/object_detector/csv/{video_basename[:-4]}.csv')
+
+######### 途中までやったなら、そこをスキップするのをお忘れなく！！！！！
