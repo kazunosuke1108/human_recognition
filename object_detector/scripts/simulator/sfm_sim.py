@@ -1,27 +1,48 @@
+import os
+import shutil
+import time
+import datetime
+from glob import glob
+import cv2
+
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.patches as patches
+
 
 class FDM():
     """
     環境に関する定義を入れる。
     """
     def __init__(self):
+        self.wall1_y=0.0
+        self.wall2_y=3.0
+
+        # results/imagesを初期化
+        self.temp_images_dir="/home/hayashide/kazu_ws/human_recognition/object_detector/scripts/simulator/results/images"
+        shutil.rmtree(self.temp_images_dir)
+        os.mkdir(self.temp_images_dir)
+        self.frame_idx=0
+
+        self.save_path=f"/home/hayashide/kazu_ws/human_recognition/object_detector/scripts/simulator/results/movies/{datetime.datetime.now().strftime('%Y%m%d%H%M%S')}.mp4"
+
         pass
 
     def U_wall(self,subject_position,center_position,):
         # 上に凸なポテンシャル場（→斥力）の計算式
-        coef_x=1.0
-        coef_y=1.0
-        potential=coef_x*(subject_position[0]-center_position[0])**2+coef_y*(subject_position[1]-center_position[1])**2
+        param_x=1.0
+        param_y=1.0
+        potential=param_x*(subject_position[0]-center_position[0])**2+param_y*(subject_position[1]-center_position[1])**2
         return potential
 
     def W_human(self,subject_position,center_position,):
         # 下に凸なポテンシャル場（→引力）の計算式
-        coef_x=1.0
-        coef_y=1.0
-        potential=-coef_x*(subject_position[0]-center_position[0])**2+-coef_y*(subject_position[1]-center_position[1])**2
+        param_x=0.1
+        param_y=0.1
+        potential=-param_x*(subject_position[0]-center_position[0])**2+-param_y*(subject_position[1]-center_position[1])**2
         return potential
+
+
 
 
 class Human(FDM):
@@ -66,16 +87,32 @@ class Visualization(Human,Robot):
         self.fig = plt.figure()
         self.ax = plt.axes()
 
+        xlim=(0,20)
+        ylim=(-1,4)
+
+        # potential drawing
+        x=np.linspace(0,20,200)
+        y=np.linspace(-1,4,50)
+        X, Y = np.meshgrid(x, y)
+        contf = self.ax.contourf(X, Y, self.potential_for_heatmap(X,Y), 10, cmap='PuOr')
+        self.ax.set_aspect('equal','box')
+        plt.colorbar(contf)
+
+        # character drawing
         self.plot_character(self.robot_position,"blue")
         self.plot_character(self.human_position,"red")
         self.plot_character(self.target_position,"green")
 
         self.plot_wall()
+
+        # force drawing
         
         plt.axis('scaled')
-        self.ax.set_xlim([0,20])
-        self.ax.set_ylim([-1,4])
-        plt.show()
+        self.ax.set_xlim(xlim)
+        self.ax.set_ylim(ylim)
+
+        plt.savefig(self.temp_images_dir+f"/{str(self.frame_idx).zfill(4)}.jpg")
+        self.frame_idx+=1
         pass
 
     def plot_character(self,position,color):
@@ -97,12 +134,28 @@ class Visualization(Human,Robot):
             #    )
     
     def plot_wall(self):
-        wall1_y=0.0
-        wall2_y=3.0
 
-        plt.plot([0,20],[wall1_y,wall1_y],c="black",lw=0.3)
-        plt.plot([0,20],[wall2_y,wall2_y],c="black",lw=0.3)
+        plt.plot([0,20],[self.wall1_y,self.wall1_y],c="black",lw=0.3)
+        plt.plot([0,20],[self.wall2_y,self.wall2_y],c="black",lw=0.3)
 
+    def potential_for_heatmap(self,X,Y):
+        pot_wall1=self.U_wall((X,Y),(X,np.full_like(X,float(self.wall1_y))))
+        pot_wall2=self.U_wall((X,Y),(X,np.full_like(X,float(self.wall2_y))))
+        pot_human=self.W_human((X,Y),(self.human_position))
+        return pot_wall1+pot_wall2+pot_human
+
+    def create_movies(self):
+        image_paths=sorted(glob(self.temp_images_dir+"/*"))
+        print(image_paths)
+        fourcc = cv2.VideoWriter_fourcc('m','p','4', 'v')
+        print(cv2.imread(image_paths[0]).shape[:2])
+        video=cv2.VideoWriter(self.save_path,fourcc, 5.0,(cv2.imread(image_paths[0]).shape[1],cv2.imread(image_paths[0]).shape[0]))
+        for image_path in image_paths:
+            image=cv2.imread(image_path)
+            video.write(image)
+            
+        video.release()
+        
 
 class Controller(Visualization):
     """
@@ -118,14 +171,17 @@ class Controller(Visualization):
         pass
 
     def test_walk(self):
-        self.robot_position+=np.array([0.5,0,np.pi/12]).reshape(-1,1)
+        self.human_position+=np.array([-0.1,0,0]).reshape(-1,1)
         self.target_position=self.get_target_position(self.robot_position)
         pass
     pass
     
 
+
+
 cont=Controller()
 
-for i in range (10):
+for i in range (100):
     cont.test_walk()
     cont.plot_current_situation()
+cont.create_movies()
