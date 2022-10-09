@@ -78,7 +78,9 @@ class Detector:
     def onVideo(self,videoPath,savePath=False,csvPath=False):
         cap=cv2.VideoCapture(videoPath)
 
-        size=(1080,720)
+        (success,image)=cap.read()
+        
+        size=image.shape[1],image.shape[0]
         
         if savePath:
             fourcc = cv2.VideoWriter_fourcc('m','p','4', 'v')
@@ -88,7 +90,6 @@ class Detector:
             print("Error in opening the file...")
             return
         
-        (success,image)=cap.read()
 
         history=[]
         i=0
@@ -128,7 +129,7 @@ class Detector:
             cv2.imshow("Result",output.get_image()[:,:,::-1])
             if savePath:
                 video.write(output.get_image()[:,:,::-1])
-                print("add frame:",time.time())
+                print("filename:",savePath,"add frame:",time.time())
             key=cv2.waitKey(1) & 0xFF
             if key ==ord("q"):
                 break
