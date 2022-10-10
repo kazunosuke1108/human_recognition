@@ -26,7 +26,7 @@ plt.legend()
 plt.xlabel("time [s]")
 plt.ylabel("distance [mm]")
 
-plt.xlim((0,20))
+plt.xlim((5,25))
 plt.ylim((0,1000))
 
 # plt.show()
