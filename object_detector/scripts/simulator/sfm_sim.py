@@ -28,18 +28,18 @@ class FDM():
 
         pass
 
-    def U_wall(self,subject_position,center_position,):
+    def U(self,subject_position,center_position,):
         # 上に凸なポテンシャル場（→斥力）の計算式
-        param_x=1.0
-        param_y=1.0
-        potential=param_x*(subject_position[0]-center_position[0])**2+param_y*(subject_position[1]-center_position[1])**2
-        return potential
-
-    def W_human(self,subject_position,center_position,):
-        # 下に凸なポテンシャル場（→引力）の計算式
         param_x=0.1
         param_y=0.1
-        potential=-param_x*(subject_position[0]-center_position[0])**2+-param_y*(subject_position[1]-center_position[1])**2
+        potential=-param_x*(subject_position[0]-center_position[0])**2-param_y*(subject_position[1]-center_position[1])**2
+        return potential
+
+    def W(self,subject_position,center_position,):
+        # 下に凸なポテンシャル場（→引力）の計算式
+        param_x=0.05
+        param_y=0.05
+        potential=param_x*(subject_position[0]-center_position[0])**2+param_y*(subject_position[1]-center_position[1])**2
         return potential
 
 
@@ -74,14 +74,20 @@ class Robot(FDM):
         return np.array([float(x_T),float(y_T),np.nan]).reshape(-1,1)
     pass
 
+class Goal(FDM):
+    def __init__(self):
+        super().__init__()
 
-class Visualization(Human,Robot):
+        self.goal_position=np.array([20,0.5,np.nan]).reshape(-1,1)
+
+class Visualization(Human,Robot,Goal):
     """
     根っこのクラスで定義されたことを図示
     """
     def __init__(self):
         Human.__init__(self)
         Robot.__init__(self)
+        Goal.__init__(self)
         pass
     def plot_current_situation(self):
         self.fig = plt.figure()
@@ -102,6 +108,7 @@ class Visualization(Human,Robot):
         self.plot_character(self.robot_position,"blue")
         self.plot_character(self.human_position,"red")
         self.plot_character(self.target_position,"green")
+        self.plot_character(self.goal_position,"purple")
 
         self.plot_wall()
 
@@ -113,6 +120,8 @@ class Visualization(Human,Robot):
 
         plt.savefig(self.temp_images_dir+f"/{str(self.frame_idx).zfill(4)}.jpg")
         self.frame_idx+=1
+        del self.fig
+        del self.ax
         pass
 
     def plot_character(self,position,color):
@@ -139,10 +148,11 @@ class Visualization(Human,Robot):
         plt.plot([0,20],[self.wall2_y,self.wall2_y],c="black",lw=0.3)
 
     def potential_for_heatmap(self,X,Y):
-        pot_wall1=self.U_wall((X,Y),(X,np.full_like(X,float(self.wall1_y))))
-        pot_wall2=self.U_wall((X,Y),(X,np.full_like(X,float(self.wall2_y))))
-        pot_human=self.W_human((X,Y),(self.human_position))
-        return pot_wall1+pot_wall2+pot_human
+        pot_wall1=self.U((X,Y),(X,np.full_like(X,float(self.wall1_y))))
+        pot_wall2=self.U((X,Y),(X,np.full_like(X,float(self.wall2_y))))
+        pot_human=self.W((X,Y),(self.human_position))
+        pot_goal=self.W((X,Y),(self.goal_position))
+        return pot_wall1+pot_wall2+pot_human+pot_goal
 
     def create_movies(self):
         image_paths=sorted(glob(self.temp_images_dir+"/*"))
@@ -181,7 +191,7 @@ class Controller(Visualization):
 
 cont=Controller()
 
-for i in range (100):
+for i in range (10):
     cont.test_walk()
     cont.plot_current_situation()
 cont.create_movies()
