@@ -14,12 +14,12 @@ for videoPath in videos:
         cap=cv2.VideoCapture(videoPath)
         ret,frame=cap.read()
         fourcc = cv2.VideoWriter_fourcc('m','p','4', 'v')
-        size=(frame.shape[0],frame.shape[1])
-        video=cv2.VideoWriter(avi_path+video_basename[:-4]+".mp4",fourcc, 30.0,size)
+        size=(frame.shape[1],frame.shape[0])
+        video=cv2.VideoWriter(avi_path+video_basename[:-4]+".mp4",fourcc, 7.0,size)
         if cap.isOpened():
             while True:
                 if ret:
-                    frame = cv2.rotate(frame, cv2.ROTATE_90_CLOCKWISE)
+                    # frame = cv2.rotate(frame, cv2.ROTATE_90_CLOCKWISE)
                     video.write(frame)
                     print("added a frame at:",time.time(),"frame shape:",(frame.shape[0],frame.shape[1]))
                 else:

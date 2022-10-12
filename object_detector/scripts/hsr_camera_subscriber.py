@@ -81,7 +81,7 @@ class Camera_Subscriber():
         if self.topicName_camInfo:
             sub_camInfo=message_filters.Subscriber(self.topicName_camInfo,CameraInfo)
             sub_list.append(sub_camInfo)
-        mf=message_filters.ApproximateTimeSynchronizer(sub_list,100,5)
+        mf=message_filters.ApproximateTimeSynchronizer(sub_list,100,3)
         return mf
 
     def ImageCallback(self,topic_rgb,topic_dpt="False",topic_camInfo="False"):

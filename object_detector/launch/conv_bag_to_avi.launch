@@ -3,8 +3,8 @@
     <arg name="avi_basename" default="0902_1_25222"/>
 
     <arg name="bag_path" default="/media/hayashide/KIOXIA/hayashide/rosbag/$(arg bag_basename).bag"/>
-    <arg name="topic_name" default="/camera4/camera/color/image_raw"/>
-    <arg name="fps" default="30"/>
+    <arg name="topic_name" default="/hsrb/head_rgbd_sensor/rgb/image_rect_color"/>
+    <arg name="fps" default="7"/>
     <arg name="save_path" default="/home/hayashide/catkin_ws/src/object_detector/scripts/temp/sources/$(arg avi_basename).avi"/>
 
 
