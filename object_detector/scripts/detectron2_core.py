@@ -111,7 +111,8 @@ class Detector:
                 output=viz.draw_panoptic_seg_predictions(predictions.to("cpu"),segmentInfo)
             
             if csvPath:
-                pred_keypoints=predictions['instances'].pred_keypoints
+                pred_keypoints=predictions#['instances'].pred_keypoints
+                print(pred_keypoints)
                 try:
                     np_pred_keypoints=pred_keypoints.to(torch.device('cpu')).detach().clone().numpy()[0]
                     np_pred_keypoints_time=np.insert(np_pred_keypoints,0,i)
