@@ -6,3 +6,4 @@ docker/config/ros_workspace/devel
 object_detector/config
 object_detector/csv
 object_detector/scripts/simulator/results
+third_party/Gaze-Attention/weights
