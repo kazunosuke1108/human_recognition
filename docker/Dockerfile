@@ -239,6 +239,12 @@ RUN echo "Defaults visiblepw" >> /etc/sudoers
 RUN echo "${USER} ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
 
 #######################################################################
+##                          install sklearn                          ##
+#######################################################################
+RUN pip install -U pip && pip install \
+   scikit-learn
+
+#######################################################################
 ##                    make user accessible to usb                    ##
 #######################################################################
 RUN adduser ${USER} dialout
