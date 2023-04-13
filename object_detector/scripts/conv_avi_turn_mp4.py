@@ -3,8 +3,8 @@ import cv2
 import time
 from glob import glob
 
-videos=sorted(glob("/home/hayashide/catkin_ws/src/object_detector/scripts/temp/sources/*"))
-avi_path="/home/hayashide/catkin_ws/src/object_detector/scripts/temp/sources/"
+videos=sorted(glob("/home/hayashide/catkin_ws/src/sotsuron_experiment/images/results/*"))
+avi_path="/home/hayashide/catkin_ws/src/sotsuron_experiment/images/results/"
 
 
 for videoPath in videos:
