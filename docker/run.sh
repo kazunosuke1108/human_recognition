@@ -33,6 +33,7 @@ else
     -v "${PWD}/config/terminator_config:/home/${USER}/.config/terminator/config" \
     -v "/$(pwd)/../recog_opencv:/home/${USER}/catkin_ws/src/recog_opencv" \
     -v "/$(pwd)/../object_detector:/home/${USER}/catkin_ws/src/object_detector" \
+    -v "/$(pwd)/../action_recognition:/home/${USER}/catkin_ws/src/action_recognition" \
     -v "/$(pwd)/../third_party:/home/${USER}/catkin_ws/src/third_party" \
     -v /etc/group:/etc/group:ro \
     -v /etc/passwd:/etc/passwd:ro \
