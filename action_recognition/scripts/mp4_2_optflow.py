@@ -12,6 +12,7 @@ for videoDir in videoDirs:
     videos=sorted(glob(videoDir+"/*"))
     # print(videos)
     for videoPath in videos:
+        print(os.path.basename(videoPath))
         cap=cv2.VideoCapture(videoPath)
         ret, frame1 = cap.read()
         prvsImg = cv2.cvtColor(frame1,cv2.COLOR_BGR2GRAY)
@@ -28,8 +29,11 @@ for videoDir in videoDirs:
             ret, frame2 = cap.read()
             nextImg = cv2.cvtColor(frame2,cv2.COLOR_BGR2GRAY)
             flow = cv2.calcOpticalFlowFarneback(prvsImg,nextImg, None, 0.5, 3, 15, 3, 5, 1.2, 0)
-            fimgu=cv2.normalize(flow[:,:,0],None,0,1,cv2.NORM_MINMAX)
-            fimgv=cv2.normalize(flow[:,:,1],None,0,1,cv2.NORM_MINMAX)
+            # fimgu=cv2.normalize(flow[:,:,0],None,0,1e-7,cv2.NORM_MINMAX)
+            # fimgv=cv2.normalize(flow[:,:,1],None,0,1e-7,cv2.NORM_MINMAX)
+            fimgu=flow[:,:,0]*255/flow[:,:,0].max()
+            fimgv=flow[:,:,1]*255/flow[:,:,1].max()
+            # print(flow[:,:,0])
             # ret, frame = cap.read()
             # if ret:
             resultPath_u="/home/hayashide/catkin_ws/src/third_party/Gaze-Attention/dataset/images_flow/"+os.path.basename(videoPath)[:-4]+"/u/"+str(i+1).zfill(4)+".jpg"
