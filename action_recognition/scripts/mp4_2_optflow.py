@@ -11,8 +11,8 @@ print(len(videos))
 #     # print(videoDir)
 #     videos=sorted(glob(videoDir+"/*"))
 #     # print(videos)
-for idx,videoPath in enumerate(videos[5379:]):
-    print(str(idx)+" / "+str(len(videos[5379:]))+"    "+os.path.basename(videoPath))
+for idx,videoPath in enumerate(videos):
+    print(str(idx)+" / "+str(len(videos))+"    "+os.path.basename(videoPath))
     cap=cv2.VideoCapture(videoPath)
     ret, frame1 = cap.read()
     prvsImg = cv2.cvtColor(frame1,cv2.COLOR_BGR2GRAY)
