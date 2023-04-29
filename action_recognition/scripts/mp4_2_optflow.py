@@ -1,4 +1,5 @@
 import os
+import shutil
 import numpy as np
 from glob import glob
 import cv2
@@ -18,13 +19,16 @@ for idx,videoPath in enumerate(videos):
     prvsImg = cv2.cvtColor(frame1,cv2.COLOR_BGR2GRAY)
     num_frame=int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
     # if "P05-R01-PastaSalad-1087378-1093795-F026082-F026267" in videoPath:
+    saveDir="/home/hayashide/catkin_ws/src/third_party/Gaze-Attention/dataset/images_rgb/"+os.path.basename(videoPath)[:-4]
+    saveDir_f="/home/hayashide/catkin_ws/src/third_party/Gaze-Attention/dataset/images_flow/"+os.path.basename(videoPath)[:-4]
+    saveDir_u="/home/hayashide/catkin_ws/src/third_party/Gaze-Attention/dataset/images_flow/"+os.path.basename(videoPath)[:-4]+"/u"
+    saveDir_v="/home/hayashide/catkin_ws/src/third_party/Gaze-Attention/dataset/images_flow/"+os.path.basename(videoPath)[:-4]+"/v"
+    # shutil.rmtree(saveDir)
+    os.makedirs(saveDir,exist_ok=True)
+    os.makedirs(saveDir_f,exist_ok=True)
+    os.makedirs(saveDir_u,exist_ok=True)
+    os.makedirs(saveDir_v,exist_ok=True)
     for i in range(num_frame):
-        saveDir="/home/hayashide/catkin_ws/src/third_party/Gaze-Attention/dataset/images_flow/"+os.path.basename(videoPath)[:-4]
-        os.makedirs(saveDir,exist_ok=True)
-        saveDir="/home/hayashide/catkin_ws/src/third_party/Gaze-Attention/dataset/images_flow/"+os.path.basename(videoPath)[:-4]+"/u"
-        os.makedirs(saveDir,exist_ok=True)
-        saveDir="/home/hayashide/catkin_ws/src/third_party/Gaze-Attention/dataset/images_flow/"+os.path.basename(videoPath)[:-4]+"/v"
-        os.makedirs(saveDir,exist_ok=True)
         cap.set(cv2.CAP_PROP_POS_FRAMES, i)
         ret, frame2 = cap.read()
         nextImg = cv2.cvtColor(frame2,cv2.COLOR_BGR2GRAY)
@@ -36,11 +40,14 @@ for idx,videoPath in enumerate(videos):
         # print(flow[:,:,0])
         # ret, frame = cap.read()
         # if ret:
-        resultPath_u="/home/hayashide/catkin_ws/src/third_party/Gaze-Attention/dataset/images_flow/"+os.path.basename(videoPath)[:-4]+"/u/"+str(i+1).zfill(4)+".jpg"
-        resultPath_v="/home/hayashide/catkin_ws/src/third_party/Gaze-Attention/dataset/images_flow/"+os.path.basename(videoPath)[:-4]+"/v/"+str(i+1).zfill(4)+".jpg"
-        # resultPath="/home/hayashide/catkin_ws/src/third_party/Gaze-Attention/dataset/images_rgb/"+os.path.basename(videoPath)[:-4]+"/"+str(i+1).zfill(4)+".jpg"
-        cv2.imwrite(resultPath_u, fimgu)
-        cv2.imwrite(resultPath_v, fimgv)
+        # frame数2倍
+        for j in [-1,0]:
+            resultPath="/home/hayashide/catkin_ws/src/third_party/Gaze-Attention/dataset/images_rgb/"+os.path.basename(videoPath)[:-4]+"/"+str(int(2*(i+1)+j)).zfill(4)+".jpg"
+            resultPath_u="/home/hayashide/catkin_ws/src/third_party/Gaze-Attention/dataset/images_flow/"+os.path.basename(videoPath)[:-4]+"/u/"+str(int(2*(i+1)+j)).zfill(4)+".jpg"
+            resultPath_v="/home/hayashide/catkin_ws/src/third_party/Gaze-Attention/dataset/images_flow/"+os.path.basename(videoPath)[:-4]+"/v/"+str(int(2*(i+1)+j)).zfill(4)+".jpg"
+            cv2.imwrite(resultPath, frame2)
+            cv2.imwrite(resultPath_u, fimgu)
+            cv2.imwrite(resultPath_v, fimgv)
         prvsImg = nextImg
 
                 # cv2.imwrite(resultPath, frame)
