@@ -32,7 +32,6 @@ else
     -v "/$(pwd)/ros_workspace:/home/${USER}/catkin_ws/" \
     -v "${PWD}/config/terminator_config:/home/${USER}/.config/terminator/config" \
     -v "/$(pwd)/../recog_opencv:/home/${USER}/catkin_ws/src/recog_opencv" \
-    -v "/$(pwd)/../dense_flow:/home/${USER}/catkin_ws/src/dense_flow" \
     -v "/$(pwd)/../object_detector:/home/${USER}/catkin_ws/src/object_detector" \
     -v "/$(pwd)/../action_recognition:/home/${USER}/catkin_ws/src/action_recognition" \
     -v "/$(pwd)/../third_party:/home/${USER}/catkin_ws/src/third_party" \
