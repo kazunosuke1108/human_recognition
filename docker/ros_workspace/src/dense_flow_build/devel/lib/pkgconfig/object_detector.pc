@@ -1,8 +1,0 @@
-prefix=/home/hayashide/catkin_ws/src/dense_flow_build/devel
-
-Name: object_detector
-Description: Description of object_detector
-Version: 0.0.0
-Cflags: 
-Libs: -L${prefix}/lib 
-Requires: 
